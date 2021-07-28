@@ -1,0 +1,133 @@
+# Copyright 2021 ilyapashuk<ilusha.paschuk@gmail.com>
+
+#    This file is part of Brbox.
+
+#    Brbox is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+
+#    Brbox is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+
+#    You should have received a copy of the GNU General Public License
+#    along with Brbox.  If not, see <https:#www.gnu.org/licenses/>.
+
+# данная таблица была разработана ИПТК "Логосвос" и устанавливалась в некоторые модели принтеров indexbraille в процессе их локализации.
+# за неимением доступа к исходной версии таблицы этот её вариант был воссоздан путём отправки на локализованное оборудование тестовых файлов с основными символами пунктуации, поэтому данный вариант таблицы может иметь расхождения с исходным.
+# это не опасно, пока работа с документами осуществляется только при помощи данного приложения, однако при переносе в данное приложение документов из других систем, работающих с данной кодировкой, а также при переносе документов из этого приложения в другие системы могут возникать проблемы совместимости, поэтому пока рекомендуется осуществлять в таких случаях ручную вычитку документах и сообщать обо всех найденных расхождениях.
+# когда исходный вариант таблицы станет доступен, он будет размещён параллельно с данным
+
+# latin letters
+uplow Aa 1
+uplow Bb 12
+uplow Cc 14
+uplow Dd 145
+uplow Ee 15
+uplow Ff 124
+uplow Gg 1245
+uplow Hh 125
+uplow Ii 24
+uplow Jj 245
+uplow Kk 13
+uplow Ll 123
+uplow Mm 134
+uplow Nn 1345
+uplow Oo 135
+uplow Pp 1234
+uplow Qq 12345
+uplow Rr 1235
+uplow Ss 234
+uplow Tt 2345
+uplow Uu 136
+uplow Vv 1236
+uplow Ww 2456
+uplow Xx 1346
+uplow Yy 13456
+uplow Zz 1356
+# digits
+digit 1 1
+digit 2 12
+digit 3 14
+digit 4 145
+digit 5 15
+digit 6 124
+digit 7 1245
+digit 8 125
+digit 9 24
+digit 0 245
+# russian letters
+uplow Аа 1
+uplow Бб 12
+uplow Вв 2456
+uplow Гг 1245
+uplow Дд 145
+uplow Ее 15
+uplow Ёё 16
+uplow Жж 245
+uplow Зз 1356
+uplow Ии 24
+uplow Йй 12346
+uplow Кк 13
+uplow Лл 123
+uplow Мм 134
+uplow Нн 1345
+uplow Оо 135
+uplow Пп 1234
+uplow Рр 1235
+uplow Сс 234
+uplow Тт 2345
+uplow Уу 136
+uplow Фф 124
+uplow Хх 125
+uplow Цц 14
+uplow Чч 12345
+uplow Шш 156
+uplow Щщ 1346
+uplow Ъъ 12356
+uplow Ыы 2346
+uplow Ьь 23456
+uplow Ээ 246
+uplow Юю 1256
+uplow Яя 1246
+# signs
+sign . 256
+sign , 2
+sign : 25
+sign ? 26
+sign ! 235
+sign + 235
+sign % 356
+sign ° 356
+sign " 236
+sign * 35
+sign ; 23
+sign = 2356
+sign / 34
+# specials
+#numsign
+sign ] 3456
+sign { 46
+sign } 6
+sign ^ 4
+sign @ 146
+sign _ 5
+sign ' 3
+sign ` 123456
+sign # 1345
+sign $ 56
+sign \ 346
+sign | 456
+sign & 1456
+sign ~ 12456
+sign √ 56
+sign · 156
+sign ( 126
+sign ) 345
+sign № 126
+sign [ 45
+sign - 36
+sign < 246
+sign > 135
