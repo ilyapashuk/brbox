@@ -26,7 +26,7 @@ import _ "brbox/configuration"
 import _ "brbox/tableonly"
 import "fmt"
 func main() {
-if len(os.Args) < 3 {
+if len(os.Args) < 2 {
 fmt.Println("available subcommands:")
 for key,_ := range brbox.Subcommands {
 fmt.Println(key)
@@ -35,7 +35,11 @@ return
 }
 sc := os.Args[1]
 if r,ok := brbox.Subcommands[sc]; ok {
+if len(os.Args) >= 3 {
 r(os.Args[2:])
+} else {
+r(nil)
+}
 } else {
 os.Stderr.Write([]byte("subcommand " + sc + " not found\n"))
 os.Exit(1)

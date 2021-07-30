@@ -19,11 +19,22 @@
 
 package prepair
 
+import "fmt"
 import "github.com/speedata/hyphenation"
 import "strings"
 import "os"
 import "unicode"
 import "bufio"
+import "brbox"
+
+// interactive hyphenation tester
+func HyphTester(_ []string) {
+LoadHyphenation()
+ins := bufio.NewScanner(os.Stdin)
+for ins.Scan() {
+fmt.Println(strings.Join(Hyphenate(ins.Text()),"-"))
+}
+}
 
 func splitword(w string, bp []int) []string {
 var res []string
@@ -83,6 +94,8 @@ l,err := hyphenation.New(pf)
 if err != nil {
 panic(err)
 }
+l.Leftmin = 1
+l.Rightmin = 2
 hlang = l
 pf.Close()
 ef,err := os.Open(efn)
@@ -138,15 +151,43 @@ if ! hyphl {
 LoadHyphenation()
 }
 var res []int
-if ex,ok := excl[strings.ToLower(w)]; ok {
+checkword := strings.ToLower(w)
+var prepart string
+var cword string
+var postpart string
+var letm bool = false
+for _,r := range checkword {
+if ! letm {
+if LangLetters.Contains(r) {
+letm = true
+cword += string(r)
+} else {
+prepart += string(r)
+}
+} else {
+if LangLetters.Contains(r) {
+cword += string(r)
+} else {
+postpart += string(r)
+}
+}
+}
+if ex,ok := excl[cword]; ok {
 res = ex
 } else {
-res = hlang.Hyphenate(w)
+res = hlang.Hyphenate(cword)
 }
 if len(res) == 0 {
 return []string{w}
 } else {
-return splitword(w, res)
+spw := splitword(cword,res)
+spw[0] = prepart + spw[0]
+spw[len(spw)-1] = spw[len(spw)-1] + postpart
+return spw
 }
 
+}
+
+func init() {
+brbox.Subcommands["hyphtest"] = HyphTester
 }
