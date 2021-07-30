@@ -117,6 +117,9 @@ return false
 letm = false
 }
 }
+if letmn < 1 {
+return false
+}
 return true
 }
 func TryHyphenate(s string) (res []string, ok bool) {
