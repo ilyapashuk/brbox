@@ -21,7 +21,7 @@ package prepair
 import "strings"
 import "brbox"
 import "github.com/ilyapashuk/go-braille"
-
+import "github.com/ilyapashuk/go-braille/translation"
 func commaNoSpaceHandler(s string, _ []string) string {
 var iscom bool
 mapper := func(r rune) rune {
@@ -126,10 +126,56 @@ return r
 }
 return strings.Map(mapper,t)
 }
+func CharForDots(dots string) (rune,error) {
+bf,err := braille.FieldFromString(dots)
+if err != nil {
+return 0,err
+}
+rl := brbox.LoadDosTable()
+bt := rl.ToBackTable()
+if r,ok := bt[bf]; ok {
+return r,nil
+} else {
+return 0,translation.UnmappableDotsError{bf}
+}
+}
+func tableReplaceHandler(t string, opts []string) string {
+rpl := make([]string,len(opts))
+for i := 0; i < len(opts); i += 2 {
+rpl[i] = opts[i]
+sub := opts[i+1]
+var rsub string
+for _,w := range strings.Split(sub," ") {
+if strings.HasPrefix(w,"0") {
+rsub += string([]rune(w)[1:])
+} else {
+rs,err := CharForDots(w)
+if err != nil {
+panic(err)
+}
+rsub += string(rs)
+}
+}
+rpl[i+1] = rsub
+}
+rp := strings.NewReplacer(rpl...)
+return rp.Replace(t)
+}
+func fileTableReplaceHandler(t string, opts []string) string {
+fn := opts[0]
+fcs,err := brbox.ReadInputFile(fn)
+if err != nil {
+panic(err)
+}
+lines := strings.Split(fcs,"\n")
+return tableReplaceHandler(t,lines)
+}
 func init() {
 Handlers["commaspace"] = HandlerFunc(commaNoSpaceHandler)
 Handlers["numsign"] = HandlerFunc(numSignHandler)
 Handlers["quotes"] = HandlerFunc(quotesHandler)
 Handlers["tableonly"] = HandlerFunc(tableOnlyHandler)
 Handlers["buni"] = HandlerFunc(brailleUnicodeHandler)
+Handlers["treplace"] = HandlerFunc(tableReplaceHandler)
+Handlers["treplacefile"] = HandlerFunc(fileTableReplaceHandler)
 }
