@@ -1,25 +1,23 @@
-let digits = "0123456789"
+const digits = "0123456789"
 function isdig(chr) {
 return digits.includes(chr)
 }
 
 let ns = charForDots("3456")
-let sb = new StringsBuilder()
 
 let dig = false
 
 let chars = text.split("")
 
-for (let char of chars) {
+chars.map(function(char) {
 let cdig = isdig(char)
 if (cdig) {
 if (! dig) {
-sb.WriteString(ns)
 dig = true
+return ns + char
 }
 } else {
 dig = false
 }
-sb.WriteString(char)
-}
-sb
+return char
+}).join("")
