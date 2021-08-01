@@ -22,22 +22,6 @@ import "strings"
 import "brbox"
 import "github.com/ilyapashuk/go-braille"
 import "github.com/ilyapashuk/go-braille/translation"
-func commaNoSpaceHandler(s string, _ []string) string {
-var iscom bool
-mapper := func(r rune) rune {
-if r == ',' {
-iscom = true
-return r
-}
-if iscom == true && r == ' ' {
-iscom = false
-return -1
-}
-iscom = false
-return r
-}
-return strings.Map(mapper,s)
-}
 
 func numSignHandler(s string, _ []string) string {
 rl := brbox.LoadDosTable()
@@ -171,9 +155,8 @@ lines := strings.Split(fcs,"\n")
 return tableReplaceHandler(t,lines)
 }
 func init() {
-Handlers["commaspace"] = HandlerFunc(commaNoSpaceHandler)
-Handlers["numsign"] = HandlerFunc(numSignHandler)
-Handlers["quotes"] = HandlerFunc(quotesHandler)
+//Handlers["numsign"] = HandlerFunc(numSignHandler)
+//Handlers["quotes"] = HandlerFunc(quotesHandler)
 Handlers["tableonly"] = HandlerFunc(tableOnlyHandler)
 Handlers["buni"] = HandlerFunc(brailleUnicodeHandler)
 Handlers["treplace"] = HandlerFunc(tableReplaceHandler)
