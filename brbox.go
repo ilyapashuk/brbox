@@ -87,9 +87,12 @@ return err
 }
 return nil
 }
-
+var DosTable translation.RuleList
 // загружает таблицу bxt
 func LoadDosTable() translation.RuleList {
+if DosTable != nil {
+return DosTable
+}
 table,err := os.ReadFile(os.Getenv("BRBOX_BXT_TABLE"))
 if err != nil {
 panic(err)
@@ -101,5 +104,6 @@ rl,err := translation.ParseRuleList(td)
 if err != nil {
 panic(err)
 }
+DosTable = rl
 return rl
 }

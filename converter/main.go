@@ -34,9 +34,7 @@ func fatal(err error) {
 if err == nil {
 return
 }
-os.Stderr.Write([]byte("error\n"))
-os.Stderr.Write([]byte(err.Error() + "\n"))
-os.Exit(1)
+panic(err)
 }
 
 func init() {

@@ -19,7 +19,6 @@
 
 package prepair
 import "strings"
-import "log"
 import "flag"
 import "fmt"
 import "brbox"
@@ -84,15 +83,15 @@ cmdline.Parse(args)
 fn := cmdline.Arg(0)
 t,err := brbox.ReadInputFile(fn)
 if err != nil {
-log.Fatal(err)
+panic(err)
 }
 script,err := brbox.ReadInputFile(*scriptname)
 if err != nil {
-log.Fatal(err)
+panic(err)
 }
 scriptl := strings.Split(script, "\n")
 shellwords.ParseEnv = true
-for i,line := range scriptl {
+for _,line := range scriptl {
 if line == "" {
 continue
 }
@@ -101,7 +100,6 @@ continue
 }
 args,err := shellwords.Parse(line)
 if err != nil {
-fmt.Println(i)
 panic(err)
 }
 if args[0] == "setenv" {
