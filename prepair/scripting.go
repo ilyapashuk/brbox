@@ -24,6 +24,24 @@ import "strings"
 import "fmt"
 import "path/filepath"
 import "brbox/configuration"
+
+type ScriptHandlerFunc func(string, []string) interface{}
+func (c ScriptHandlerFunc) Handle(t string, args []string) *string {
+res := c(t,args)
+switch res.(type) {
+case string:
+r := res.(string)
+return &r
+case Stringer:
+r := res.(Stringer).String()
+return &r
+case bool:
+return nil
+default:
+panic("invalid script return type")
+}
+}
+
 type Stringer interface {
 String() string
 }
@@ -36,7 +54,7 @@ func PrepairRuntime() *goja.Runtime {
 r := goja.New()
 r.Set("getenv",os.Getenv)
 r.Set("listHandlers",ListHandlers)
-r.Set("callHandler",CallHandler)
+r.Set("callHandler",ScriptCallHandler)
 r.Set("setenv",os.Setenv)
 r.Set("unsetenv",os.Unsetenv)
 r.Set("lookupEnv",os.LookupEnv)
@@ -52,7 +70,7 @@ r.Set("print",fmt.Println)
 return r
 }
 
-func scriptHandler(t string, opts []string) string {
+func scriptHandler(t string, opts []string) *string {
 script := opts[0]
 r := PrepairRuntime()
 r.Set("text",t)
@@ -62,15 +80,19 @@ panic(err)
 }
 res := val.Export()
 switch res.(type) {
+case bool:
+return nil
 case string:
-return res.(string)
+rr := res.(string)
+return &rr
 case Stringer:
-return res.(Stringer).String()
+rr := res.(Stringer).String()
+return &rr
 }
 panic("invalid script return type")
 }
 
-func scriptFileHandler(t string, opts []string) string {
+func scriptFileHandler(t string, opts []string) *string {
 script,err := brbox.ReadInputFile(opts[0])
 if err != nil {
 panic(err)
@@ -80,10 +102,10 @@ return scriptHandler(t, []string{script})
 
 type ScriptHandler struct {
 FileName string
-p *goja.Program
+hf ScriptHandlerFunc
 }
-func (c *ScriptHandler) Handle(t string, opts []string) string {
-if c.p == nil {
+func (c *ScriptHandler) Handle(t string, opts []string) *string {
+if c.hf == nil {
 filedata,err := brbox.ReadInputFile(c.FileName)
 if err != nil {
 panic(err)
@@ -92,23 +114,20 @@ prog,err := goja.Compile(filepath.Base(c.FileName), filedata, true)
 if err != nil {
 panic(err)
 }
-c.p = prog
-}
 r := PrepairRuntime()
-r.Set("text",t)
-r.Set("opts",opts)
-val,err := r.RunProgram(c.p)
+_,err = r.RunProgram(prog)
 if err != nil {
 panic(err)
 }
-res := val.Export()
-switch res.(type) {
-case string:
-return res.(string)
-case Stringer:
-return res.(Stringer).String()
+var hff ScriptHandlerFunc
+hfv := r.Get("handle")
+err = r.ExportTo(hfv,&hff)
+if err != nil {
+panic(err)
 }
-panic("invalid script return type")
+c.hf = hff
+}
+return c.hf.Handle(t,opts)
 }
 func init() {
 Handlers["script"] = HandlerFunc(scriptHandler)

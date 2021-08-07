@@ -20,7 +20,7 @@
 package prepair
 import "strings"
 
-func runeDropHandler(s string, opts []string) string {
+func runeDropHandler(s string, opts []string) *string {
 sg := SymbolGroupe(opts[0])
 mapper := func(r rune) rune {
 if sg.Contains(r) {
@@ -28,10 +28,11 @@ return -1
 }
 return r
 }
-return strings.Map(mapper, s)
+result := strings.Map(mapper, s)
+return &result
 }
 
-func runeOnceHandler(s string, opts []string) string {
+func runeOnceHandler(s string, opts []string) *string {
 sg := SymbolGroupe(opts[0])
 var orch rune
 mapper := func(r rune) rune {
@@ -43,7 +44,8 @@ return -1
 orch = r
 return r
 }
-return strings.Map(mapper,s)
+res := strings.Map(mapper,s)
+return &res
 }
 
 func init() {

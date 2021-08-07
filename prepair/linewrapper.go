@@ -112,7 +112,7 @@ cut.WriteString(w)
 return cut.b.String()
 }
 
-func lineWrapHandler(s string, opts []string) string {
+func lineWrapHandler(line string, opts []string) *string {
 var lss string
 lss = os.Getenv("BRBOX_LINE_SIZE")
 ls,err := strconv.Atoi(lss)
@@ -123,16 +123,13 @@ var hyph bool = false
 if opts[0] == "1" {
 hyph = true
 }
-lines := strings.Split(s, "\n")
-rlines := make([]string, len(lines))
-for i,line := range lines {
 if len([]rune(line)) > ls {
-rlines[i] = wordstr(line, ls, hyph)
+res := wordstr(line, ls, hyph)
+return &res
 } else {
-rlines[i] = line
+res := line
+return &res
 }
-}
-return strings.Join(rlines, "\n")
 }
 
 func init() {

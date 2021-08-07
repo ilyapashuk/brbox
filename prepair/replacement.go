@@ -20,11 +20,12 @@
 package prepair
 import "strings"
 import "brbox"
-func replaceHandler(s string, opts []string) string {
+func replaceHandler(s string, opts []string) *string {
 repl := strings.NewReplacer(opts...)
-return repl.Replace(s)
+res := repl.Replace(s)
+return &res
 }
-func fileReplaceHandler(s string, opts []string) string {
+func fileReplaceHandler(s string, opts []string) *string {
 fn := opts[0]
 fcs,err := brbox.ReadInputFile(fn)
 if err != nil {
@@ -32,7 +33,8 @@ panic(err)
 }
 lines := strings.Split(fcs,"\n")
 repl := strings.NewReplacer(lines...)
-return repl.Replace(s)
+res := repl.Replace(s)
+return &res
 }
 func init() {
 Handlers["replace"] = HandlerFunc(replaceHandler)

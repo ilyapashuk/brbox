@@ -21,23 +21,19 @@ package prepair
 
 import "strings"
 
-func noBlankLinesHandler(s string, _ []string) string {
-ls := strings.Split(s, "\n")
-lss := make([]string, 0, len(ls))
-for _,line := range ls {
+func noBlankLinesHandler(line string, _ []string) *string {
+ll := line
 if line == "" {
-continue
+return nil
 }
 if strings.TrimSpace(line) == "" {
-continue
+return nil
 }
-lss = append(lss, line)
+return &ll
 }
-return strings.Join(lss, "\n")
-}
-
-func trimSpaceHandler(s string, _ []string) string {
-return strings.TrimSpace(s)
+func trimSpaceHandler(s string, _ []string) *string {
+res := strings.TrimSpace(s)
+return &res
 }
 
 func init() {

@@ -23,7 +23,7 @@ import "flag"
 import "fmt"
 import "brbox"
 import "path/filepath"
-import "os"
+
 import "brbox/configuration"
 import "github.com/mattn/go-shellwords"
 var BomSequence = []byte("\xef\xbb\xbf")
@@ -40,18 +40,26 @@ return false
 var Digits SymbolGroupe = SymbolGroupe("0123456789")
 
 type Handler interface {
-Handle(string, []string) string
+Handle(string, []string) *string
 }
-type HandlerFunc func(string, []string) string
-func (c HandlerFunc) Handle(st string, opts []string) string {
+type HandlerFunc func(string, []string) *string
+func (c HandlerFunc) Handle(st string, opts []string) *string {
 return c(st, opts)
 }
 var Handlers map[string]Handler = make(map[string]Handler)
 
-func CallHandler(t string, hn string, args []string) string {
-return Handlers[hn].Handle(t,args)
+func CallHandler(t string, hn string, args []string) *string {
+res := Handlers[hn].Handle(t,args)
+return res
 }
-
+func ScriptCallHandler(t,hn string, args []string) interface{} {
+res := CallHandler(t,hn,args)
+if res == nil {
+return false
+} else {
+return *res
+}
+}
 func ListHandlers() []string {
 res := make([]string,0,len(Handlers))
 for k,_ := range Handlers {
@@ -65,7 +73,23 @@ func isdig(s rune) bool {
 return Digits.Contains(s)
 }
 
-
+type HandlerChain [][]string
+func (c HandlerChain) Handle(t string,_ []string) *string {
+res := t
+for _,v := range c {
+var r *string
+if len(v) == 1 {
+r = Handlers[v[0]].Handle(res,nil)
+} else {
+r = Handlers[v[0]].Handle(res,v[1:])
+}
+if r == nil {
+return nil
+}
+res = *r
+}
+return &res
+}
 
 func Prepair(args []string) {
 cmdline := flag.NewFlagSet("prepair", flag.ExitOnError)
@@ -91,6 +115,7 @@ panic(err)
 }
 scriptl := strings.Split(script, "\n")
 shellwords.ParseEnv = true
+var hc [][]string
 for _,line := range scriptl {
 if line == "" {
 continue
@@ -102,16 +127,23 @@ args,err := shellwords.Parse(line)
 if err != nil {
 panic(err)
 }
-if args[0] == "setenv" {
-os.Setenv(args[1],args[2])
-continue
+hc = append(hc,args)
 }
-if len(args) >= 2 {
-t = Handlers[args[0]].Handle(t, args[1:])
-} else {
-t = Handlers[args[0]].Handle(t, nil)
+hcc := HandlerChain(hc)
+lines := strings.Split(t,"\n")
+res := make([]*string, len(lines))
+for i,l := range lines {
+res[i] = hcc.Handle(l, nil)
+}
+sb := new(strings.Builder)
+sb.Grow(len(t))
+for _,l := range res {
+if l != nil {
+sb.WriteString(*l)
+sb.WriteString("\n")
 }
 }
+t = sb.String()
 var rfn string
 if *outext != "" {
 rfn = strings.TrimSuffix(fn, filepath.Ext(fn)) + "." + *outext

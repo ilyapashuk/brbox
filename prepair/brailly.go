@@ -23,62 +23,8 @@ import "brbox"
 import "github.com/ilyapashuk/go-braille"
 import "github.com/ilyapashuk/go-braille/translation"
 
-func numSignHandler(s string, _ []string) string {
-rl := brbox.LoadDosTable()
-backt := rl.ToBackTable()
-forwt := rl.ToForwardTable()
-field,_ := braille.FieldFromString("3456")
-ns := backt[field]
-sfield,_ := braille.FieldFromString("6")
-sdot := backt[sfield]
-digs := make(map[braille.BrailleField]struct{}, 10)
-for _,digit := range string(Digits) {
-digs[forwt[digit]] = struct{}{}
-}
 
-sb := new(strings.Builder)
-var dig bool
-for _,r := range s {
-cdig := isdig(r)
-if cdig && dig == false {
-dig = true
-sb.WriteRune(ns)
-sb.WriteRune(r)
-continue
-}
-if (! cdig) && dig {
-// this is not digit, but we should check weather it can be confused with a digit by comparing their braille translations
-if trans,ok := forwt[r]; ok {
-if _,okk := digs[trans]; okk {
-// this is not a digit, but has translation identical to digit's, so we need to add a 6th dot
-sb.WriteRune(sdot)
-}
-}
-dig = false
-}
-sb.WriteRune(r)
-}
-return sb.String()
-}
-
-func quotesHandler(s string, _ []string) string {
-var qm bool
-mapper := func(r rune) rune {
-if r == '"' {
-if ! qm {
-qm = true
-return r
-} else {
-qm = false
-return '%'
-}
-} else {
-return r
-}
-}
-return strings.Map(mapper,s)
-}
-func tableOnlyHandler(s string, _ []string) string {
+func tableOnlyHandler(s string, _ []string) *string {
 rl := brbox.LoadDosTable()
 backt := rl.ToBackTable()
 field,_ := braille.FieldFromString("123456")
@@ -94,10 +40,11 @@ return r
 return sdots
 }
 }
-return strings.Map(mapper, s)
+res := strings.Map(mapper, s)
+return &res
 }
 
-func brailleUnicodeHandler(t string, _ []string) string {
+func brailleUnicodeHandler(t string, _ []string) *string {
 rl := brbox.LoadDosTable()
 bt := rl.ToBackTable()
 mapper := func(r rune) rune {
@@ -108,7 +55,8 @@ return bt[field]
 return r
 }
 }
-return strings.Map(mapper,t)
+res := strings.Map(mapper,t)
+return &res
 }
 func CharForDots(dots string) (rune,error) {
 bf,err := braille.FieldFromString(dots)
@@ -123,7 +71,8 @@ return r,nil
 return 0,translation.UnmappableDotsError{bf}
 }
 }
-func tableReplaceHandler(t string, opts []string) string {
+
+func tableReplaceHandler(t string, opts []string) *string {
 rpl := make([]string,len(opts))
 for i := 0; i < len(opts); i += 2 {
 rpl[i] = opts[i]
@@ -143,9 +92,10 @@ rsub += string(rs)
 rpl[i+1] = rsub
 }
 rp := strings.NewReplacer(rpl...)
-return rp.Replace(t)
+res := rp.Replace(t)
+return &res
 }
-func fileTableReplaceHandler(t string, opts []string) string {
+func fileTableReplaceHandler(t string, opts []string) *string {
 fn := opts[0]
 fcs,err := brbox.ReadInputFile(fn)
 if err != nil {

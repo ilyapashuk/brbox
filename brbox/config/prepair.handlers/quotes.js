@@ -1,7 +1,9 @@
-let clc = charForDots("356")
+const clc = charForDots("356")
+
+function handle(text, opts) {
 let qm = false
 let chars = text.split("")
-chars.map(function(lett) {
+return chars.map(function(lett) {
 if (lett === '"' && (!qm)) {
 qm = true
 return lett
@@ -12,3 +14,4 @@ return clc
 }
 return lett
 }).join("")
+}

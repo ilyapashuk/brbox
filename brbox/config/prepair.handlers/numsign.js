@@ -3,13 +3,13 @@ function isdig(chr) {
 return digits.includes(chr)
 }
 
-let ns = charForDots("3456")
+const ns = charForDots("3456")
 
+function handle(text, opts) {
 let dig = false
-
 let chars = text.split("")
 
-chars.map(function(char) {
+return chars.map(function(char) {
 let cdig = isdig(char)
 if (cdig) {
 if (! dig) {
@@ -21,3 +21,4 @@ dig = false
 }
 return char
 }).join("")
+}
