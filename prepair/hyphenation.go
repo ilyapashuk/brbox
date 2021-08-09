@@ -78,9 +78,10 @@ var hlang *hyphenation.Lang
 var LangLetters SymbolGroupe
 
 func LoadHyphenation() {
+brbox.LoadDosTable()
 pfn := os.Getenv("BRBOX_HYPHENATION_PATTERNS_FILE")
 efn := os.Getenv("BRBOX_HYPHENATION_EXCEPTIONS_FILE")
-llr := []rune(os.Getenv("BRBOX_LANG_LETTERS"))
+llr := []rune(brbox.LangLetters)
 lll := make([]rune, 0, len(llr) * 2)
 for _,r := range llr {
 lll = append(lll, r, unicode.ToUpper(r))

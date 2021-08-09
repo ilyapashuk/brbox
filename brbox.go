@@ -30,6 +30,8 @@ _ "embed"
 
 var BomSequence = []byte("\xef\xbb\xbf")
 
+var LangLetters string
+
 var Subcommands map[string]func(args []string) = make(map[string]func(args []string))
 // some commonly used functions
 // эта функция осуществляет считывание поданного на вход текстового файла
@@ -100,6 +102,24 @@ panic(err)
 ts := string(table)
 ts = strings.ReplaceAll(ts, "\r", "")
 td := strings.Split(ts, "\n")
+var ll bool
+for _,l := range td {
+if ! ll {
+if l == "#langlets" {
+ll = true
+}
+} else {
+if l == "#endlanglets" {
+break
+}
+if strings.HasPrefix(l,"#") {
+continue
+}
+w := strings.Split(l," ")
+r := []rune(w[1])[1]
+LangLetters += string(r)
+}
+}
 rl,err := translation.ParseRuleList(td)
 if err != nil {
 panic(err)
