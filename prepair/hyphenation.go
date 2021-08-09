@@ -26,6 +26,8 @@ import "os"
 import "unicode"
 import "bufio"
 import "brbox"
+import "brbox/configuration"
+import "path/filepath"
 
 // interactive hyphenation tester
 func HyphTester(_ []string) {
@@ -79,8 +81,8 @@ var LangLetters SymbolGroupe
 
 func LoadHyphenation() {
 brbox.LoadDosTable()
-pfn := os.Getenv("BRBOX_HYPHENATION_PATTERNS_FILE")
-efn := os.Getenv("BRBOX_HYPHENATION_EXCEPTIONS_FILE")
+pfn := filepath.Join(configuration.ConfDir,"hyphenation","patterns.txt")
+efn := filepath.Join(configuration.ConfDir,"hyphenation","exceptions.txt")
 llr := []rune(brbox.LangLetters)
 lll := make([]rune, 0, len(llr) * 2)
 for _,r := range llr {
