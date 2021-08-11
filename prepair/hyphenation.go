@@ -154,12 +154,11 @@ if ! hyphl {
 LoadHyphenation()
 }
 var res []int
-checkword := strings.ToLower(w)
 var prepart string
 var cword string
 var postpart string
 var letm bool = false
-for _,r := range checkword {
+for _,r := range w {
 if ! letm {
 if LangLetters.Contains(r) {
 letm = true
@@ -175,7 +174,8 @@ postpart += string(r)
 }
 }
 }
-if ex,ok := excl[cword]; ok {
+checkword := strings.ToLower(cword)
+if ex,ok := excl[checkword]; ok {
 res = ex
 } else {
 res = hlang.Hyphenate(cword)
