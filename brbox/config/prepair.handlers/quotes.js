@@ -4,13 +4,14 @@ function handle(text, opts) {
 let qm = false
 let chars = text.split("")
 return chars.map(function(lett) {
-if (lett === '"' && (!qm)) {
+if (lett === '"') {
+if (!qm) {
 qm = true
 return lett
-}
-if (lett === '"' && qm) {
+} else {
 qm = false
 return clc
+}
 }
 return lett
 }).join("")

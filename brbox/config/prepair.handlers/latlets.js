@@ -1,8 +1,19 @@
 ﻿// проставление признаков латинских малых и латинских больших букв
 // вспомогательные функции
 const latlets = "abcdefghijklmnopqrstuvwxyz"
+function buildchobj(lets) {
+let obj = Object.create(null)
+for (let chr of lets) {
+obj[chr] = true
+}
+return obj
+}
+let latobj = buildchobj(latlets)
+Object.keys(latobj).forEach(function(key) {
+latobj[key.toUpperCase()] = true
+})
 function isLatlet(l) {
-return latlets.includes(l.toLowerCase())
+return (l in latobj)
 }
 function isupper(l) {
 return l === l.toUpperCase()

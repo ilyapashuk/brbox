@@ -1,6 +1,15 @@
 const digits = "0123456789"
+
+function buildchobj(lets) {
+let obj = Object.create(null)
+for (let chr of lets) {
+obj[chr] = true
+}
+return obj
+}
+let digobj = buildchobj(digits)
 function isdig(chr) {
-return digits.includes(chr)
+return (chr in digobj)
 }
 
 const ns = charForDots("3456")
