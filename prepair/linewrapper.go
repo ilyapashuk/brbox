@@ -17,9 +17,9 @@
 
 package prepair
 import "os"
+import "fmt"
 import "strings"
 import "strconv"
-
 // this wrapper prevents lines with length more then linesize to appear in the output file
 type LineCutter struct {
 b *strings.Builder
@@ -50,10 +50,42 @@ c.WriteRune(v)
 // this function is part of our word wrapping implementation
 
 func wordstr(l string, LineSize int, hyph bool) string {
+if ! hyphl {
+LoadHyphenation()
+}
 lw := strings.Split(l, " ")
 cut := new(LineCutter)
 cut.LineSize = LineSize
-for _,ww := range lw {
+for _,word := range lw {
+var splres []string
+var spli int
+var letm int = -1
+rword := []rune(word)
+for i,v := range rword {
+cr := LangLetters.Contains(v)
+if letm == -1 {
+if cr {
+letm = 0
+continue
+}
+}
+if letm == 0 {
+if ! cr {
+letm = 1
+continue
+}
+}
+if letm == 1 {
+if cr {
+letm = 0
+splres = append(splres,string(rword[spli:i]))
+spli = i
+}
+}
+}
+splres = append(splres,string(rword[spli:]))
+fmt.Println(splres)
+for i,ww := range splres {
 w := ww
 cycle:
 if cut.c == LineSize {
@@ -66,7 +98,7 @@ cut.WriteString(w)
 continue
 }
 ispace := true
-if cut.c == 0 {
+if cut.c == 0 || i != 0 {
 ispace = false
 }
 if ispace {
@@ -109,13 +141,13 @@ cut.WriteRune(' ')
 cut.WriteString(w)
 }
 }
+}
 return cut.b.String()
 }
 
 func lineWrapHandler(line string, opts []string) *string {
-var lss string
-lss = os.Getenv("BRBOX_LINE_SIZE")
-ls,err := strconv.Atoi(lss)
+lss := os.Getenv("BRBOX_LINE_SIZE")
+ls,err := strconv.Atoi(string(lss))
 if err != nil {
 panic(err)
 }
