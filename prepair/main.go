@@ -129,6 +129,20 @@ panic(err)
 }
 hc = append(hc,args)
 }
+t = PrepairText(hc,t)
+var rfn string
+if *outext != "" {
+rfn = strings.TrimSuffix(fn, filepath.Ext(fn)) + "." + *outext
+} else {
+rfn = cmdline.Arg(1)
+}
+err = brbox.WriteOutputFile(rfn, t, true)
+if err != nil {
+panic(err)
+}
+}
+
+func PrepairText(hc [][]string, t string) string {
 hcc := HandlerChain(hc)
 lines := strings.Split(t,"\n")
 res := make([]*string, len(lines))
@@ -143,18 +157,23 @@ sb.WriteString(*l)
 sb.WriteString("\n")
 }
 }
-t = sb.String()
-var rfn string
-if *outext != "" {
-rfn = strings.TrimSuffix(fn, filepath.Ext(fn)) + "." + *outext
-} else {
-rfn = cmdline.Arg(1)
+return sb.String()
 }
-err = brbox.WriteOutputFile(rfn, t, true)
+func LineWrapCommand(args []string) {
+arg := args[0]
+ifn := args[1]
+ofn := args[2]
+indata,err := brbox.ReadInputFile(ifn)
 if err != nil {
 panic(err)
 }
+res := PrepairText([][]string{{"linewrap",arg}}, indata)
+if err != nil {
+panic(err)
+}
+err = brbox.WriteOutputFile(ofn,res,true)
 }
 func init() {
 brbox.Subcommands["prepair"] = Prepair
+brbox.Subcommands["linewrap"] = LineWrapCommand
 }

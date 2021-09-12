@@ -17,7 +17,6 @@
 
 package prepair
 import "os"
-import "fmt"
 import "strings"
 import "strconv"
 // this wrapper prevents lines with length more then linesize to appear in the output file
@@ -84,7 +83,6 @@ spli = i
 }
 }
 splres = append(splres,string(rword[spli:]))
-fmt.Println(splres)
 for i,ww := range splres {
 w := ww
 cycle:
