@@ -24,6 +24,7 @@ import _ "brbox/prepair"
 import _ "brbox/converter"
 import _ "brbox/configuration"
 import _ "brbox/tableonly"
+import _ "brbox/uiInteract"
 import "fmt"
 func main() {
 if len(os.Args) < 2 {
