@@ -143,7 +143,16 @@ cut.WriteString(w)
 return cut.b.String()
 }
 
-func lineWrapHandler(line string, opts []string) *string {
+func trimSpaces(s string) string {
+lines := strings.Split(s,"\n")
+for i := 0; i < len(lines); i++ {
+lines[i] = strings.TrimRight(lines[i], " ")
+}
+res := strings.Join(lines,"\n")
+return res
+}
+
+func lineWrapHandler(sline string, opts []string) *string {
 lss := os.Getenv("BRBOX_LINE_SIZE")
 ls,err := strconv.Atoi(string(lss))
 if err != nil {
@@ -153,13 +162,15 @@ var hyph bool = false
 if opts[0] == "1" {
 hyph = true
 }
+line := strings.TrimRight(sline," ")
+var res string
 if len([]rune(line)) > ls {
-res := wordstr(line, ls, hyph)
-return &res
+res = wordstr(line, ls, hyph)
 } else {
-res := line
-return &res
+res = line
 }
+res = trimSpaces(res)
+return &res
 }
 
 func init() {
