@@ -26,6 +26,9 @@ dig = true
 return ns + char
 }
 } else {
+if (char === ',') {
+return char
+}
 dig = false
 }
 return char
